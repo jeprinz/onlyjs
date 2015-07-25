@@ -1,8 +1,8 @@
 var only = function(){
-	var content = jQuery("#content");
-	var callbacks = {};//XXX make callbacks get deleted when element is deleted, or not global
 
-	function parseHtmlObj(obj) {
+	var dataIdName = "date-onlyjs-id";
+
+	function parseHtmlObj(obj, callbacks) {
 		if (obj instanceof Object) {
 			var keys = [];
 			var attrList = [];
@@ -17,19 +17,19 @@ var only = function(){
 			var attr = " " + attrList.join(" ");
 
 			var value = obj[name];
-			return parseNameandValue(name, value, attr);
+			return parseNameandValue(name, value, attr, callbacks);
 		} else {
 			return JSON.stringify(obj);
 		}
 	}
 
-	function parseNameandValue(name, value, attr) {
+	function parseNameandValue(name, value, attr, callbacks) {
 		var valStr;
 		if (value instanceof Array) {
-			valStr = parseHtmlList(value);
+			valStr = parseHtmlList(value, callbacks);
 		} else if (value instanceof Function) {
 			var hash = "" + Object.keys(callbacks).length;
-			var dataId = 'data-only-id="' + hash + '"';
+			var dataId = dataIdName + '="' + hash + '"';
 			attr += ' ' + dataId;
 			callbacks[dataId] = value;
 			valStr = "";
@@ -44,11 +44,11 @@ var only = function(){
 		return element;
 	}
 
-	function parseHtmlList(list) {
+	function parseHtmlList(list, callbacks) {
 		var strList = [];
 		for ( var i in list) {
 			var el = list[i];
-			strList.push(parseHtmlObj(el));
+			strList.push(parseHtmlObj(el, callbacks));
 		}
 		return strList.join("");
 	}
@@ -67,10 +67,13 @@ var only = function(){
 	
 	return {
 		makeHtml: function(html) {
-			var html = parseHtmlList(html);
+			var callbacks = {};
+			var html = parseHtmlList(html, callbacks);
 			document.body.innerHTML = html;
 			for (var id in callbacks){
-				callbacks[id](getByDataId(id));
+				var element = getByDataId(id);
+				callbacks[id](element);
+				element[0].removeAttribute(dataIdName);
 			}
 		},
 
