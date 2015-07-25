@@ -4,17 +4,30 @@
 		<script src="only.js"></script>
 		<script>
 			$(function(){
-				jsOnly([ 
+				function stuff(){
+					return "hi";
+				}
+				makeHtml([ 
 					{div : [
 						{p : 1+3,
 							class: "testC"},
+						{button: "press me!",
+						//	onclick: function(){
+						//		alert("clicked!");}
+							},
+						{textarea: "",
+							id: "input"},
 						{p : "bye"}]},
 						{ul : [
 						       {li : "one"},
 						       {li : "two"}],
-						       style : "color:red;"}]); 
+						       style : "color:red;"},
+						{p: new Date()},
+						{p: "hello"}
+				]); 
 				makeCss(".testC",{
-					color: "red"
+					color: "green",
+					float: "right"
 				})
 			})
 		</script>

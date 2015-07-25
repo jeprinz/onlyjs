@@ -1,4 +1,4 @@
-var content = jQuery("#content")
+var content = jQuery("#content");
 
 function parseHtmlObj(obj) {
 	if (obj instanceof Object) {
@@ -21,24 +21,25 @@ function parseHtmlObj(obj) {
 	}
 }
 
-var callbacks = [];
+var callbacks = [];//XXX make callbacks not global
 function parseNameandValue(name, value, attr) {
 	var valStr;
 	if (value instanceof Array) {
 		valStr = parseHtmlList(value);
-	} else if (value instanceof React) {
-		var hash = "asdf";
+	} else if (value instanceof Function && false) {
+		var hash = "asdf";//XXX make actual random string
+		console.log(JSON.stringify(value));
 		attr += ' data-only-id="' + hash + '"'
 		callbacks.push(function(){
-			$(value.reactTo).change(function(){
-				console.log('changed' + hash);
-				$("[data-only-id='" + hash + "']").html(value.code($(value.reactTo)));
-			});
+			$("[data-only-id='" + hash + "']").html(value());
 		});
 		valStr = "";
-	} else {
-		valStr = value;
-	}
+	}else {
+		console.log("its  astring" + value);
+		valstr = value;
+	}// else {
+//		valStr = JSON.stringify(value);
+//	}
 	return "<" + name + attr + ">" + valStr + "</" + name + ">";
 }
 
@@ -76,9 +77,4 @@ function genCss(name, css){
 	}
 	cssText.push('}');
 	return cssText.join('');
-}
-
-function React(reactTo, code){
-	this.reactTo = reactTo;
-	this.code = code;
 }
