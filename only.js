@@ -40,15 +40,15 @@ function parseHtmlList(list) {
 	return strList.join("");
 }
 
-function jsOnly(html, css) {
+function makeHtml(html) {
 	var html = parseHtmlList(html);
-	console.log(html);
-	$(document.body).html(html);
+	document.body.innerHTML = html;
 }
 
 function makeCss(name, css){
 	var sheet = document.createElement('style');
 	sheet.innerHTML = genCss(name, css);
+	console.log(genCss(name, css));
 	document.body.appendChild(sheet);
 }
 
@@ -58,7 +58,7 @@ function genCss(name, css){
 	cssText.push('{');
 	for (var el in css){
 		cssText.push(el+":");
-		cssText.push(css[el]);
+		cssText.push(css[el]+";");
 	}
 	cssText.push('}');
 	return cssText.join('');
