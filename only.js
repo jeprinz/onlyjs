@@ -12,7 +12,12 @@ var only = function(){
 
 			for (var i = 1; i < elements.length; ++i) {
 				var el = elements[i];
-				attrList.push(el + "=" + JSON.stringify(obj[el]));
+				if (el === "code"){
+					var dataId = setupCallback(obj[el], callbacks);
+					attrList.push(dataId);
+				} else {
+					attrList.push(el + "=" + JSON.stringify(obj[el]));
+				}
 			}
 			var attr = " " + attrList.join(" ");
 
@@ -26,6 +31,14 @@ var only = function(){
 	function isValidHtmlTag(tag){
 		return !(document.createElement(tag) instanceof HTMLUnknownElement);
 	}
+	
+	function setupCallback(func, callbacks){
+		var hash = "" + Object.keys(callbacks).length;
+		var dataId = dataIdName + '="' + hash + '"';
+		callbacks[dataId] = func;
+		return dataId;
+	}
+	
 	function parseNameandValue(name, value, attr, callbacks) {
 		if (!isValidHtmlTag(name)){
 			warn('"' + name + '" is not a valid HTML tag');
@@ -34,10 +47,7 @@ var only = function(){
 		if (value instanceof Array) {
 			valStr = parseHtmlList(value, callbacks);
 		} else if (value instanceof Function) {
-			var hash = "" + Object.keys(callbacks).length;
-			var dataId = dataIdName + '="' + hash + '"';
-			attr += ' ' + dataId;
-			callbacks[dataId] = value;
+					attr += ' ' + setupCallback(value, callbacks);
 			valStr = "";
 		}else {
 			valStr = value;
@@ -97,7 +107,6 @@ var only = function(){
 		makeCss: function(name, css){
 			var sheet = document.createElement('style');
 			sheet.innerHTML = genCss(name, css);
-			console.log(genCss(name, css));
 			document.body.appendChild(sheet);
 		}
 	}

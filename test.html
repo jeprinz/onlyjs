@@ -19,7 +19,13 @@
 					{div : [
 						{p : 1+3,
 							class: "testC"},
-						{button: "press me!"},
+						{button: "press me!",
+							code: function(me){
+									$(me).click(function(){
+										alert('clicked');
+									});
+								}
+							},
 						{textarea: "",
 							id: "input"},
 						{p : "bye"}]},
@@ -41,8 +47,7 @@
 						},
 						{div: [
 							{p: "hello there"},
-							makeUl(["one", "two", "three", "four"]),
-							{yolo: "hi"}
+							makeUl(["one", "two", "three", "four"])
 							]}
 				]); 
 				only.makeCss(".testC",{
