@@ -21,26 +21,26 @@ function parseHtmlObj(obj) {
 	}
 }
 
-var callbacks = [];//XXX make callbacks not global
+var callbacks = {};//XXX make callbacks not global
 function parseNameandValue(name, value, attr) {
 	var valStr;
 	if (value instanceof Array) {
 		valStr = parseHtmlList(value);
-	} else if (value instanceof Function && false) {
+	} else if (value instanceof Function) {
 		var hash = "asdf";//XXX make actual random string
-		console.log(JSON.stringify(value));
-		attr += ' data-only-id="' + hash + '"'
-		callbacks.push(function(){
-			$("[data-only-id='" + hash + "']").html(value());
-		});
-		valStr = "";
+		var dataId = 'data-only-id="' + hash + '"';
+		attr += ' ' + dataId;
+		callbacks[dataId] = value;
+		valStr = "temp";
 	}else {
-		console.log("its  astring" + value);
-		valstr = value;
-	}// else {
-//		valStr = JSON.stringify(value);
-//	}
+		valStr = value;
+	}
 	return "<" + name + attr + ">" + valStr + "</" + name + ">";
+}
+
+function getByDataId(dataId){
+	var element = document.querySelectorAll('[' + dataId + ']')
+	return element;
 }
 
 function parseHtmlList(list) {
@@ -55,8 +55,8 @@ function parseHtmlList(list) {
 function makeHtml(html) {
 	var html = parseHtmlList(html);
 	document.body.innerHTML = html;
-	for (var i in callbacks){
-		callbacks[i]();
+	for (var id in callbacks){
+		callbacks[id](getByDataId(id));
 	}
 }
 
