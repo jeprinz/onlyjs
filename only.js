@@ -21,10 +21,21 @@ function parseHtmlObj(obj) {
 	}
 }
 
+var callbacks = [];
 function parseNameandValue(name, value, attr) {
 	var valStr;
 	if (value instanceof Array) {
 		valStr = parseHtmlList(value);
+	} else if (value instanceof React) {
+		var hash = "asdf";
+		attr += ' data-only-id="' + hash + '"'
+		callbacks.push(function(){
+			$(value.reactTo).change(function(){
+				console.log('changed' + hash);
+				$("[data-only-id='" + hash + "']").html(value.code($(value.reactTo)));
+			});
+		});
+		valStr = "";
 	} else {
 		valStr = value;
 	}
@@ -43,6 +54,9 @@ function parseHtmlList(list) {
 function makeHtml(html) {
 	var html = parseHtmlList(html);
 	document.body.innerHTML = html;
+	for (var i in callbacks){
+		callbacks[i]();
+	}
 }
 
 function makeCss(name, css){
@@ -62,4 +76,9 @@ function genCss(name, css){
 	}
 	cssText.push('}');
 	return cssText.join('');
+}
+
+function React(reactTo, code){
+	this.reactTo = reactTo;
+	this.code = code;
 }
