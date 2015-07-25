@@ -1,5 +1,5 @@
 # only.js: Write everything in javascript
-only.js allows HTML and CSS to be generated from a JSON representation, which allows for easy to understand code.
+only.js allows HTML and CSS to be generated from a JSON representation, which allows easily readable and consice code.
 
 ###HTML
 For example, this HTML:
@@ -56,8 +56,6 @@ makeHtml([
 Will be displayed as:
   <p>Sat Jul 25 2015 15:40:38 GMT-0400 (Eastern Daylight Time)</p>
   
-only.js also allows you to associate javascript with an HTML element without the need for an id.
-
 ###Keep all code for one component together
 This HTML+javascript, spread between two files:
 ```HTML
@@ -87,4 +85,27 @@ only.makeHtml([
 	}
 	//...
 ]);
+```
+
+###Reuse Elements Easily
+To reuse an element, all you need to do is save it in a var:
+```javascript
+//create reusable error message
+var errorMsg = {
+	div: [
+		{p: "there has been an error"},
+		{img: "",
+			src: "error.png"}
+	],
+	style: "border-width:10;border-style:solid;"
+};
+
+//use it:
+only.makeHtml([
+	//...
+	errorMsg,
+	//... more stuff
+	errorMsg
+]);
+
 ```
