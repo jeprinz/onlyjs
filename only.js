@@ -23,7 +23,13 @@ var only = function(){
 		}
 	}
 
+	function isValidHtmlTag(tag){
+		return !(document.createElement(tag) instanceof HTMLUnknownElement);
+	}
 	function parseNameandValue(name, value, attr, callbacks) {
+		if (!isValidHtmlTag(name)){
+			warn('"' + name + '" is not a valid HTML tag');
+		}
 		var valStr;
 		if (value instanceof Array) {
 			valStr = parseHtmlList(value, callbacks);
@@ -45,6 +51,9 @@ var only = function(){
 	}
 
 	function parseHtmlList(list, callbacks) {
+		if (!(list instanceof Array)){
+			parseError("expected Array, but was given: " + String(list));
+		}
 		var strList = [];
 		for ( var i in list) {
 			var el = list[i];
@@ -63,6 +72,14 @@ var only = function(){
 		}
 		cssText.push('}');
 		return cssText.join('');
+	}
+
+	function parseError(msg){
+		throw new TypeError("only.js parse error: " + msg);
+	}
+
+	function warn(msg){
+		console.log("only.js WARNING: " + msg);
 	}
 	
 	return {
