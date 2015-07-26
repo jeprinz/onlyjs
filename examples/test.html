@@ -37,24 +37,25 @@
 						{p: function(me){
 							$(me).text("initial");
 							$("#input").on("keyup", function(){
-									$(me).text($(this).val());
-									})}
+								$(me).text($(this).val());
+							})}
 						},
 						{p: function(me){
 							$("#input").on("keyup", function(){
-									$(me).text($(this).val() + ", yo!");	
-									})}
+								console.log('running');
+								$(me).text($(this).val() + ", yo!");	
+							})}
 						},
 						{div: [
 							{p: "hello there"},
 							makeUl(["one", "two", "three", "four"])
 							]}
 				]); 
-				only.makeCss(".testC",{
+				/*only.makeCss(".testC",{
 					color: "green",
 					float: "right",
 					avacado: "ripe"
-				})
+				})*/
 			})
 		</script>
 	</head>
