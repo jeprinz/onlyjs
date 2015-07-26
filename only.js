@@ -12,7 +12,7 @@ var only = function(){
 		console.log("only.js WARNING: " + msg);
 	}
 	
-	//takes an HTML tag name, value, and sttribute list and returns HTMLElement
+	//takes an HTML tag name, value, and attribute list and returns HTMLElement
 	function parseNameandValue(name, value, attrList, callbacks) {
 		if (!isValidHtmlTag(name)){
 			warn('"' + name + '" is not a valid HTML tag');
@@ -26,6 +26,10 @@ var only = function(){
 			}
 		} else if (value instanceof Function) {
 			attrList.push(setupCallback(value, callbacks));
+		} else if (value.constructor === Object){
+			el.appendChild(parseHtmlJson(value));
+		} else if (value instanceof HTMLElement) {
+			el.appendChild(value);
 		} else {
 			el.innerHTML = value;
 		}
@@ -102,18 +106,9 @@ var only = function(){
 	}
 	
 	//creates HTMLElement object from JSON representation
-	function makeHtmlElement(name, html){
-		if (!isValidHtmlTag(name)){
-			warn('"' + name + '" is not a valid HTML tag');
-		}
-		if (!callbacks)
-			var callbacks = {};
-		var htmlList = parseHtmlList(html, callbacks);
-		var result = document.createElement(name);
-		for (var i in htmlList){
-			var htmlObj = htmlList[i];
-			result.appendChild(htmlObj);
-		}
+	function makeHtmlElement(html){
+		callbacks = {};
+		var result = parseHtmlJson(html, callbacks);
 
 		//make result not display, then add it to body so that jQuery selector
 		//callbacks on it will work
@@ -152,8 +147,8 @@ var only = function(){
 	
 	return {
 		html: makeHtmlElement,
-		makeHtml: function(html) {
-			var html = makeHtmlElement("body", html);
+		setHtml: function(html) {
+			var html = makeHtmlElement({body: html});
 			document.body = html;
 		},
 

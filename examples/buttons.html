@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<meta charset='uts-8'>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="../only.js"></script>
+		<script>
+/////////////////////////////////////////////////////////////////////////
+$(document).ready(function(){
+	function widget(){
+		var button = only.html({button: "CLICK ME"});
+		var text = only.html({p: "HI"});
+		var buttonState = true;
+		$(button).click(function(){
+			var $text = $(text);
+			if (buttonState){
+				$text.text("BYE");
+			} else{
+				$text.text("HI");
+			}
+			buttonState = !buttonState;
+		});
+		return only.html({
+				div: [
+					button,
+					text
+				],
+				style: "border-width:10;border-style:solid;"
+			});
+	}
+
+	only.setHtml([
+			widget(),
+			widget(),
+			{
+				tr: [
+					{td: widget()},
+					{td: widget()},
+					{td: {p: "hello"}}
+				]
+			}
+		]);
+});
+////////////////////////////////////////////////////////////////////////
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
