@@ -155,16 +155,12 @@ var only = function(){
 		makeHtml: function(html) {
 			var html = makeHtmlElement("body", html);
 			document.body = html;
-			for (var id in callbacks){
-				var element = getByDataId(html, id);
-				callbacks[id](element);
-				element[0].removeAttribute(dataIdName);
-			}
 		},
 
 		makeCss: function(name, css){
 			var sheet = document.createElement('style');
 			sheet.innerHTML = genCss(name, css);
+			console.log("innerHTML === " + sheet.innerHTML);
 			document.body.appendChild(sheet);
 		}
 	}
