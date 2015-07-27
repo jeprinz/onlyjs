@@ -3,7 +3,7 @@ var only = function(){
 	//used to temporarily mark elements that need to have functions
 	//run on them after HTML is generated
 	var dataIdName = "date-onlyjs-id";
-	
+
 	function parseError(msg){
 		throw new TypeError("only.js parse error: " + msg);
 	}
@@ -11,7 +11,7 @@ var only = function(){
 	function warn(msg){
 		console.log("only.js WARNING: " + msg);
 	}
-	
+
 	//takes an HTML tag name, value, and attribute list and returns HTMLElement
 	function parseNameandValue(name, value, attrList, callbacks, css) {
 		if (!isValidHtmlTag(name)){
@@ -43,7 +43,7 @@ var only = function(){
 		return el;
 	}
 
-	
+
 	//takes HTML Json representation and returns HTMLElement
 	function parseHtmlJson(obj, callbacks) {
 		var htmlObj;
@@ -62,9 +62,9 @@ var only = function(){
 				} else if (el === "css"){
 					css = obj[el];
 				} else {
-				      var attrObj = document.createAttribute(el);
-				      attrObj.value = obj[el];
-				      attrList.push(attrObj);
+					var attrObj = document.createAttribute(el);
+					attrObj.value = obj[el];
+					attrList.push(attrObj);
 				}
 			}
 			var value = obj[name];
@@ -78,7 +78,7 @@ var only = function(){
 	function isValidHtmlTag(tag){
 		return !(document.createElement(tag) instanceof HTMLUnknownElement);
 	}
-	
+
 	//adds a function to be run later to the callbacks object, along with the element id it should run on
 	function setupCallback(func, callbacks){
 		var hash = "" + Object.keys(callbacks).length;
@@ -87,20 +87,20 @@ var only = function(){
 		dataAttr.value = hash;
 		return dataAttr;
 	}
-	
+
 	//returns a list of HTML elements inside base that have dataIdName=dataId attribute
 	function getByDataId(base, dataId){
 		var element = base.querySelectorAll('[' + dataIdName + '="' + dataId + '"]');
 		return element;
 	}
-	
+
 	//parses a list of HTMLElement and HTML json representations and
 	//returns list of HTMLElement as result
 	function parseHtmlList(list, callbacks) {
 		if (!(list instanceof Array)){
 			parseError("expected Array, but was given: " + String(list));
 		}
-		
+
 		return list.map(function(element){
 			if(element instanceof HTMLElement){
 				return element;
@@ -109,7 +109,7 @@ var only = function(){
 			}
 		});
 	}
-	
+
 	//creates HTMLElement object from JSON representation
 	function makeHtmlElement(html){
 		callbacks = {};
@@ -126,16 +126,31 @@ var only = function(){
 			callbacks[id](element);
 			element[0].removeAttribute(dataIdName);
 		}
-		
+
 		//remove result from body, then restore its display attribute
 		document.body.removeChild(result);
 		result.style.display = oldDisplay;
 
 		return result;
 	}
+
+	//takes HTMLElement and JSON representation CSS and sets the CSS on the HTMLElement
+	function setElementCss(el, css){
+		for (var property in css){
+			if (!(property in el.style)){
+				warn('"' + property + '" is not a valid css property');
+			}
+			el.style[property] = css[property];
+		}
+	}
+
+	function setHtml(html){
+		var html = makeHtmlElement({body: html});
+		document.body = html;
+	}
 	
 	//CSS
-	
+
 	//takes name of CSS class or id and a JSON representation of the CSS
 	//and returns CSS as a string
 	function genCss(name, css){
@@ -148,6 +163,13 @@ var only = function(){
 		}
 		cssText.push('}');
 		return cssText.join('');
+	}
+
+
+	function makeCss(name, css){
+		var sheet = document.createElement('style');
+		sheet.innerHTML = genCss(name, css);
+		document.body.appendChild(sheet);
 	}
 	
 	//takes camelcase name and returns lower case with dashes name
@@ -165,40 +187,23 @@ var only = function(){
 		return newNameList.join("");
 	}
 	
-	//takes HTMLElement and JSON represention CSS and sets the CSS on the HTMLElement
-	function setElementCss(el, css){
-		for (var property in css){
-			var dashedProp = camelToDash(property);
-			if (dashedProp in el.style){
-				el.style[dashedProp] = css[property];
-			} else {
-				warn('"' + dashedProp + '" is not a valid css property');
+	//Utility functions
+	
+	function merge(){
+		var ret = {};
+		for (var i = 0; i < arguments.length; ++i){
+			var arg = arguments[i];
+			for (var el in arg){
+				ret[el] = arg[el];
 			}
 		}
+		return ret;
 	}
 	
 	return {
 		html: makeHtmlElement,
-		setHtml: function(html) {
-			var html = makeHtmlElement({body: html});
-			document.body = html;
-		},
-
-		makeCss: function(name, css){
-			var sheet = document.createElement('style');
-			sheet.innerHTML = genCss(name, css);
-			document.body.appendChild(sheet);
-		},
-		
-		merge: function(){
-			var ret = {};
-			for (var i = 0; i < arguments.length; ++i){
-				var arg = arguments[i];
-				for (var el in arg){
-					ret[el] = arg[el];
-				}
-			}
-			return ret;
-		}
+		setHtml: setHtml,
+		makeCss: makeCss,
+		merge: merge
 	}
 }();

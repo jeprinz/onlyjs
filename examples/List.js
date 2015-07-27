@@ -2,7 +2,7 @@ $(document).ready(function(){
 	function listHolder(){
 		var borderCss = {
 			borderStyle: "solid",
-			borderWidth: "10px",
+			borderWidth: "10px"
 		}
 		var holderCss = only.merge(borderCss, {
 			height: "200px",
