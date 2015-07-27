@@ -69,8 +69,10 @@ var only = function(){
 			}
 			var value = obj[name];
 			htmlObj = parseNameandValue(name, value, attrList, callbacks, css);
-		} else {
+		} else if (typeof obj === "string"){
 			htmlObj = JSON.stringify(obj);
+		} else {
+			parseError(String(obj) + " is not a valid HTML object: must be either a JSON HTML representation or an HTMLElement");
 		}
 		return htmlObj;
 	}
