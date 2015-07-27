@@ -57,11 +57,11 @@ Will be displayed as:
   <p>Sat Jul 25 2015 15:40:38 GMT-0400 (Eastern Daylight Time)</p>
   
 ###Keep all code for one component together
-This HTML+javascript, spread between two files:
+This HTML+javascript+CSS, spread between three files:
 ```HTML
 <body>
   <!-- ... -->
-  <button id="button1"></button>
+  <button id="button1" class="button"></button>
   <!-- ... -->
 </body>
 ```
@@ -72,6 +72,14 @@ $(".button1").click(
 )
 //...
 ```
+```CSS
+/* ... */
+.button {
+	border-style: solid;
+	border-width: 5px;
+}
+/* ... */
+```
 can become just one thing in one file:
 ```javascript
 only.makeHtml([
@@ -81,6 +89,10 @@ only.makeHtml([
 			$(me).click(function(){
 				alert("I just got clicked!");
 			});
+		},
+		css: {
+			borderStyle: "solid",
+			borderWidth: "5px"
 		}
 	}
 	//...
