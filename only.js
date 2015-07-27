@@ -13,7 +13,7 @@ var only = function(){
 	}
 	
 	//takes an HTML tag name, value, and attribute list and returns HTMLElement
-	function parseNameandValue(name, value, attrList, callbacks) {
+	function parseNameandValue(name, value, attrList, callbacks, css) {
 		if (!isValidHtmlTag(name)){
 			warn('"' + name + '" is not a valid HTML tag');
 		}
@@ -37,6 +37,9 @@ var only = function(){
 			var attr = attrList[i];
 			el.setAttributeNode(attr);
 		}
+		if (css){
+			setElementCss(el, css);
+		}
 		return el;
 	}
 
@@ -47,7 +50,7 @@ var only = function(){
 		if (obj instanceof Object) {
 			var keys = [];
 			var attrList = [];
-
+			var css = null;
 			var elements = Object.keys(obj);
 			name = elements[0];
 
@@ -56,6 +59,8 @@ var only = function(){
 				if (el === "code"){
 					var dataId = setupCallback(obj[el], callbacks);
 					attrList.push(dataId);
+				} else if (el === "css"){
+					css = obj[el];
 				} else {
 				      var attrObj = document.createAttribute(el);
 				      attrObj.value = obj[el];
@@ -63,7 +68,7 @@ var only = function(){
 				}
 			}
 			var value = obj[name];
-			htmlObj = parseNameandValue(name, value, attrList, callbacks);
+			htmlObj = parseNameandValue(name, value, attrList, callbacks, css);
 		} else {
 			htmlObj = JSON.stringify(obj);
 		}
@@ -135,7 +140,7 @@ var only = function(){
 	//and returns CSS as a string
 	function genCss(name, css){
 		cssText = [];
-		cssText.push(name);
+		cssText.push(camelToDash(name));
 		cssText.push('{');
 		for (var el in css){
 			cssText.push(el+":");
@@ -143,6 +148,33 @@ var only = function(){
 		}
 		cssText.push('}');
 		return cssText.join('');
+	}
+	
+	//takes camelcase name and returns lower case with dashes name
+	function camelToDash(name){
+		newNameList = [];
+		for (var i = 0; i < name.length; ++i){
+			var letter = name[i];
+			if (letter === letter.toLowerCase()){
+				newNameList.push(letter);
+			} else {
+				newNameList.push('-');
+				newNameList.push(letter.toLowerCase());
+			}
+		}
+		return newNameList.join("");
+	}
+	
+	//takes HTMLElement and JSON represention CSS and sets the CSS on the HTMLElement
+	function setElementCss(el, css){
+		for (var property in css){
+			var dashedProp = camelToDash(property);
+			if (dashedProp in el.style){
+				el.style[dashedProp] = css[property];
+			} else {
+				warn('"' + dashedProp + '" is not a valid css property');
+			}
+		}
 	}
 	
 	return {
@@ -155,7 +187,6 @@ var only = function(){
 		makeCss: function(name, css){
 			var sheet = document.createElement('style');
 			sheet.innerHTML = genCss(name, css);
-			console.log("innerHTML === " + sheet.innerHTML);
 			document.body.appendChild(sheet);
 		}
 	}
