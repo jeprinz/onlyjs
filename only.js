@@ -188,6 +188,17 @@ var only = function(){
 			var sheet = document.createElement('style');
 			sheet.innerHTML = genCss(name, css);
 			document.body.appendChild(sheet);
+		},
+		
+		merge: function(){
+			var ret = {};
+			for (var i = 0; i < arguments.length; ++i){
+				var arg = arguments[i];
+				for (var el in arg){
+					ret[el] = arg[el];
+				}
+			}
+			return ret;
 		}
 	}
 }();
