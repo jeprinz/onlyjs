@@ -14,6 +14,9 @@ var only = function(){
 
 	//takes an HTML tag name, value, and attribute list and returns HTMLElement
 	function parseNameandValue(name, value, attrList, callbacks, css) {
+		if (typeof name !== "string"){
+			parseError("expected string for HTML tag name, but given " + name + (typeof name));
+		}
 		if (!isValidHtmlTag(name)){
 			warn('"' + name + '" is not a valid HTML tag');
 		}
