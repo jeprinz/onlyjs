@@ -151,6 +151,12 @@ var only = function(){
 		document.body = html;
 	}
 	
+	function htmlFromStr(str){//make async
+	    var div = document.createElement("div");
+	    div.innerHTML = str;
+	    return div.firstChild;
+	}
+	
 	//CSS
 
 	//takes name of CSS class or id and a JSON representation of the CSS
@@ -205,6 +211,7 @@ var only = function(){
 	return {
 		html: makeHtmlElement,
 		setHtml: setHtml,
+		htmlFromStr: htmlFromStr,
 		makeCss: makeCss,
 		merge: merge
 	}
