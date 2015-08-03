@@ -2,7 +2,7 @@ var only = function(){
 
 	//used to temporarily mark elements that need to have functions
 	//run on them after HTML is generated
-	var dataIdName = "date-onlyjs-id";
+	var dataIdName = "data-onlyjs-id";
 
 	function parseError(msg){
 		throw new TypeError("only.js parse error: " + msg);
@@ -95,7 +95,7 @@ var only = function(){
 
 	//returns a list of HTML elements inside base that have dataIdName=dataId attribute
 	function getByDataId(base, dataId){
-		var element = base.querySelectorAll('[' + dataIdName + '="' + dataId + '"]');
+		var element = base.querySelector('[' + dataIdName + '="' + dataId + '"]');
 		return element;
 	}
 
@@ -129,7 +129,7 @@ var only = function(){
 		for (var id in callbacks){
 			var element = getByDataId(result, id);
 			callbacks[id](element);
-			element[0].removeAttribute(dataIdName);
+			element.removeAttribute(dataIdName);
 		}
 
 		//remove result from body, then restore its display attribute
@@ -210,12 +210,22 @@ var only = function(){
 		}
 		return ret;
 	}
+
+	function addEvent(obj, type, fn) {
+	        if (obj.addEventListener)
+	                obj.addEventListener(type, fn, false);
+	        else if (obj.attachEvent)
+	                obj.attachEvent('on' + type, function() { return fn.apply(obj, [window.event]); });
+		else
+			throw new Error("add event didn't work for element " + obj);
+	}
 	
 	return {
 		html: makeHtmlElement,
 		setHtml: setHtml,
 		htmlFromStr: htmlFromStr,
 		makeCss: makeCss,
-		merge: merge
+		merge: merge,
+		addEvent: addEvent
 	}
 }();
