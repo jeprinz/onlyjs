@@ -60,8 +60,12 @@ var only = function(){
 			for (var i = 1; i < elements.length; ++i) {
 				var el = elements[i];
 				if (el === "code"){
-					var dataId = setupCallback(obj[el], callbacks);
-					attrList.push(dataId);
+					if (obj[el] instanceof Function && obj[el].length === 1){
+						var dataId = setupCallback(obj[el], callbacks);
+						attrList.push(dataId);
+					} else {
+						warn("code attribute must be a function of one argument");
+					}
 				} else if (el === "css"){
 					css = obj[el];
 				} else {

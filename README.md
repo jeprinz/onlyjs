@@ -1,22 +1,25 @@
 # only.js: Write everything in javascript
 only.js allows HTML and CSS to be generated from a JSON representation, which allows easily readable and consice code.
 
+only.js provides an alternate approach to writing webpages that lets you use the power of javascript inside HTML.
+This README explains how it works and what it is good for.
+
 ###HTML
 For example, this HTML:
 ```HTML
-  <div>
-    <p>Food:</p>
-    <ul class="cake">
-      <li>Milk</li>
-      <li>Spinach</li>
-      <li>Tacos</li>
-      <li>Peas</li>
-    </ul>
-  </div>
+<div>
+  <p>Food:</p>
+  <ul class="cake">
+    <li>Milk</li>
+    <li>Spinach</li>
+    <li>Tacos</li>
+    <li>Peas</li>
+  </ul>
+</div>
 ```
 can become this javascript:
 ```javascript
-only.makeHtml([
+only.setHtml([
   {div: [
     {ul: [
         {li: "Milk"},
@@ -49,7 +52,7 @@ only.makeCss(".cake",{
 ###Inline javascript
 This allows you to put any code you want into your HTML representation directly:
 ```javascript
-makeHtml([
+only.setHtml([
     {p: String(new Date())}
 ]);
 ```
@@ -82,7 +85,7 @@ $(".button1").click(
 ```
 can become just one thing in one file:
 ```javascript
-only.makeHtml([
+only.setHtml([
     //...
 	{button: "ima button",
 		code: function(me){//this function gets run with me as the button element
@@ -113,11 +116,36 @@ var errorMsg = {
 };
 
 //use it:
-only.makeHtml([
+only.setHtml([
 	//...
 	errorMsg,
 	//... more stuff
 	errorMsg
 ]);
 
+```
+
+
+###No need to refer to elements with ids. Just store them in Javascript variables!
+This program would normally require an HTML file that has an id attribute on the input,
+the button, and the p tag. Instead, these HTML elements can be stored in javascript
+variables directly, so that there is no need to keep track of ids.
+
+```javascript
+var input = only.html({input: ""});
+var submit = only.html({button: "Submit Name"})
+var response = only.html({p: ""});
+
+//no need for an id on the input, button, and p, just refer to javascript variables
+submit.onclick = function(){
+	var name = input.value;
+	response.innerHTML = "Hello " + name, " how are you today?";
+}
+
+only.setHtml([
+	{p: "Please enter your name"},
+	input,
+	submit,
+	response
+]);
 ```
