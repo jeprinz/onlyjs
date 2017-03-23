@@ -1,7 +1,6 @@
 # only.js: Write everything in javascript
 only.js allows HTML and CSS to be written inline in Javascript code using JSON representation.
 
-###HTML
 For example, this HTML:
 ```HTML
 <div>
