@@ -1,8 +1,5 @@
 # only.js: Write everything in javascript
-only.js allows HTML and CSS to be generated from a JSON representation, which allows easily readable and concise code.
-
-only.js provides an alternate approach to writing webpages that lets you use the power of javascript inside HTML.
-This README explains how it works and what it is good for.
+only.js allows HTML and CSS to be written inline in Javascript code using JSON representation.
 
 ###HTML
 For example, this HTML:
@@ -58,7 +55,7 @@ only.setHtml([
 ```
 Will be displayed as:
   <p>Sat Jul 25 2015 15:40:38 GMT-0400 (Eastern Daylight Time)</p>
-  
+
 ###Keep all code for one component together
 This HTML+javascript+CSS, spread between three files:
 ```HTML

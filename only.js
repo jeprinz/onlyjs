@@ -1,41 +1,43 @@
 module.exports = (function(){
 
-    //used to temporarily mark elements that need to have functions
-    //run on them after HTML is generated
-    var dataIdName = "data-onlyjs-id";
+    //Does the browser have the iterator feature?
+    var iterators = Symbol && Symbol.iterator;
+    function isIterable(obj){
+      return (iterators && obj[Symbol.iterator]) || obj instanceof Array
+    }
 
     function parseError(msg){
       throw new TypeError("only.js parse error: " + msg);
     }
 
     function warn(msg){
-      console.log("only.js WARNING: " + msg);
+      console.warn("onlyjs WARNING: " + msg);
     }
 
     //takes an HTML tag name, value, and attribute list and returns HTMLElement
-    function parseNameandValue(name, value, attrList, callbacks, css) {
+    function parseNameandValue(name, value, attrList, css) {
       if (typeof name !== "string"){
         parseError("expected string for HTML tag name, but given " + name + (typeof name));
       }
-      if (!isValidHtmlTag(name)){
+      var el = document.createElement(name);
+      if (isUnknownElement(el)){
         warn('"' + name + '" is not a valid HTML tag');
       }
-      var el = document.createElement(name);
-      if (value instanceof Array) {
-        var htmlList = parseHtmlList(value, callbacks);
+
+      if (value.constructor === Object){
+        el.appendChild(parseHtmlJson(value));
+      } else if (value instanceof HTMLElement) {
+        el.appendChild(value);
+      } else if(typeof value === "string") {
+        el.innerHTML = value;
+      } else if (isIterable(value)) {
+        var htmlList = parseHtmlList(value);
         for (var i in htmlList){
           var htmlObj = htmlList[i];
           el.appendChild(htmlObj);
         }
-      } else if (value instanceof Function) {
-        attrList.push(setupCallback(value, callbacks));
-      } else if (value.constructor === Object){
-        el.appendChild(parseHtmlJson(value));
-      } else if (value instanceof HTMLElement) {
-        el.appendChild(value);
-      } else {
-        el.innerHTML = value;
       }
+
       for (var i in attrList){
         var attr = attrList[i];
         el.setAttribute(attr.name, attr.val);
@@ -48,13 +50,12 @@ module.exports = (function(){
 
 
     //takes HTML Json representation and returns HTMLElement
-    function parseHtmlJson(obj, callbacks) {
-      if (obj instanceof Array){
+    function parseHtmlJson(obj) {
+      if (obj instanceof Array){//TODO why is this here
         parseError("Expected HTMLElement or object, but recieved " + obj);
       }
       var htmlObj;
       if (obj instanceof Object) {
-        var keys = [];
         var attrList = [];
         var css = null;
         var elements = Object.keys(obj);
@@ -62,14 +63,7 @@ module.exports = (function(){
 
         for (var i = 1; i < elements.length; ++i) {
           var el = elements[i];
-          if (el === "code"){
-            if (obj[el] instanceof Function && obj[el].length === 1){
-              var dataId = setupCallback(obj[el], callbacks);
-              attrList.push(dataId);
-            } else {
-              warn("code attribute must be a function of one argument");
-            }
-          } else if (el === "css"){
+          if (el === "css"){
             css = obj[el];
           } else {
             var attr = {name: el, val: obj[el]}
@@ -77,26 +71,17 @@ module.exports = (function(){
           }
         }
         var value = obj[name];
-        htmlObj = parseNameandValue(name, value, attrList, callbacks, css);
+        htmlObj = parseNameandValue(name, value, attrList, css);
       } else if (typeof obj === "string"){
-        htmlObj = JSON.stringify(obj);
+        htmlObj = document.createTextNode(obj);
       } else {
         parseError(String(obj) + " is not a valid HTML object: must be either a JSON HTML representation or an HTMLElement");
       }
       return htmlObj;
     }
 
-    function isValidHtmlTag(tag){
-      return !(document.createElement(tag) instanceof HTMLUnknownElement);
-    }
-
-    //adds a function to be run later to the callbacks object, along with the element id it should run on
-    function setupCallback(func, callbacks){
-      var hash = "" + Object.keys(callbacks).length;
-      callbacks[hash] = func;
-      var dataAttr = document.createAttribute(dataIdName);
-      dataAttr.value = hash;
-      return dataAttr;
+    function isUnknownElement(el){
+      return el instanceof HTMLUnknownElement;
     }
 
     //returns a list of HTML elements inside base that have dataIdName=dataId attribute
@@ -107,42 +92,18 @@ module.exports = (function(){
 
     //parses a list of HTMLElement and HTML json representations and
     //returns list of HTMLElement as result
-    function parseHtmlList(list, callbacks) {
-      if (!(list instanceof Array)){
+    function parseHtmlList(list) {
+      if (!(isIterable(list))){
         parseError("expected Array, but was given: " + String(list));
       }
 
       return list.map(function(element){
-        if(element instanceof HTMLElement){
+        if(element instanceof Node){
           return element;
         } else {
-          return parseHtmlJson(element, callbacks);
+          return parseHtmlJson(element);
         }
       });
-    }
-
-    //creates HTMLElement object from JSON representation
-    function makeHtmlElement(html){
-      callbacks = {};
-      var result = parseHtmlJson(html, callbacks);
-
-      //make result not display, then add it to body so that jQuery selector
-      //callbacks on it will work
-      var oldDisplay = result.style.display;
-      result.style.display = "none";
-      document.body.appendChild(result);
-
-      for (var id in callbacks){
-        var element = getByDataId(result, id);
-        callbacks[id](element);
-        element.removeAttribute(dataIdName);
-      }
-
-      //remove result from body, then restore its display attribute
-      document.body.removeChild(result);
-      result.style.display = oldDisplay;
-
-      return result;
     }
 
     //takes HTMLElement and JSON representation CSS and sets the CSS on the HTMLElement
@@ -156,14 +117,8 @@ module.exports = (function(){
     }
 
     function setHtml(html){
-      var html = makeHtmlElement({body: html});
+      var html = parseHtmlJson({body: html});
       document.body = html;
-    }
-
-    function htmlFromStr(str){//make async
-      var div = document.createElement("div");
-      div.innerHTML = str;
-      return div.firstChild;
     }
 
     //CSS
@@ -217,23 +172,10 @@ module.exports = (function(){
       return ret;
     }
 
-    function addEvent(obj, type, fn) {
-      if (obj.addEventListener)
-      obj.addEventListener(type, fn, false);
-      else if (obj.attachEvent)
-      obj.attachEvent('on' + type, function() { return fn.apply(obj, [window.event]); });
-      else
-      throw new Error("add event didn't work for element " + obj);
-    }
-
     return {
-      html: makeHtmlElement,
+      html: parseHtmlJson,
       setHtml: setHtml,
-      htmlFromStr: htmlFromStr,
       makeCss: makeCss,
-      merge: merge,
-      addEvent: addEvent
+      merge: merge
     }
-  }();
-  return only;
-})();
+  })();

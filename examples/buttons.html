@@ -2,9 +2,12 @@
 	<head>
 		<meta charset='utf-8'>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script>module = {}</script>
 		<script src="../only.js"></script>
 		<script>
 /////////////////////////////////////////////////////////////////////////
+only = module.exports
+
 $(document).ready(function(){
 	function widget(){
 		var button = only.html({button: "CLICK ME"});
@@ -24,7 +27,10 @@ $(document).ready(function(){
 					button,
 					text
 				],
-				style: "border-width:10;border-style:solid;"
+				style: "border-width:10;border-style:solid;",//Set css either in regular style attribute
+				css: {
+					background: 'green'//Or in the special css member
+				}
 			});
 	}
 
@@ -35,7 +41,8 @@ $(document).ready(function(){
 				tr: [
 					{td: widget()},
 					{td: widget()},
-					{td: {p: "hello"}}
+					{td: {div: ["this paragraph", "has multiple", "text nodes"]}},
+					{td: "this is just text"}
 				]
 			}
 		]);
