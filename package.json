@@ -1,0 +1,32 @@
+{
+  "name": "onlyjs",
+  "version": "0.0.0",
+  "description": "Allows HTML and CSS to be written neatly with Javascript object literals",
+  "main": "only.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacob5555555555/onlyjs.git"
+  },
+  "keywords": [
+    "html",
+    "css",
+    "json",
+    "object",
+    "literals",
+    "only",
+    "js",
+    "onlyjs"
+  ],
+  "author": "Jacob Prinz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacob5555555555/onlyjs/issues"
+  },
+  "homepage": "https://github.com/jacob5555555555/onlyjs#readme"
+}
