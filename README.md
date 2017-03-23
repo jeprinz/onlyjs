@@ -45,8 +45,20 @@ only.makeCss(".cake",{
 });
 ```
 
+or, put css style inline with javascript
+```javascript
+only.setHtml({
+  p: "Hello World",
+  css: {
+    color: "red",
+    display: "inline-block"
+  }
+})
+```
+
 ###Inline javascript
-This allows you to put any code you want into your HTML representation directly:
+This allows you to put any code you want into your HTML representation directly,
+just like a templating engine but in Javascript:
 ```javascript
 only.setHtml([
     {p: String(new Date())}
@@ -81,21 +93,25 @@ $(".button1").click(
 ```
 can become just one thing in one file:
 ```javascript
-only.setHtml([
-    //...
-	{button: "ima button",
-		code: function(me){//this function gets run with me as the button element
-			$(me).click(function(){
-				alert("I just got clicked!");
-			});
-		},
+//create button
+var button = only.html(
+  {button: "ima button",
 		css: {
 			borderStyle: "solid",
 			borderWidth: "5px"
 		}
 	}
-	//...
-]);
+);
+
+//add listener
+button.addEventListener("click", function(e){
+  console.log("button clicked!");
+})
+
+//add to page
+only.setHtml([
+  button
+])
 ```
 
 ###Reuse Elements Easily
@@ -122,17 +138,15 @@ only.setHtml([
 ```
 
 
-###No need to refer to elements with ids. Just store them in Javascript variables!
-This program would normally require an HTML file that has an id attribute on the input,
-the button, and the p tag. Instead, these HTML elements can be stored in javascript
-variables directly, so that there is no need to keep track of ids.
+###Another example
+Simple user interaction:
 
 ```javascript
 var input = only.html({input: ""});
 var submit = only.html({button: "Submit Name"})
 var response = only.html({p: ""});
 
-//no need for an id on the input, button, and p, just refer to javascript variables
+//no need for an id on the button
 submit.onclick = function(){
 	var name = input.value;
 	response.innerHTML = "Hello " + name, " how are you today?";
