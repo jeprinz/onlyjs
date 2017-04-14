@@ -1,6 +1,6 @@
 {
   "name": "onlyjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Allows HTML and CSS to be written neatly with Javascript object literals",
   "main": "only.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jacob5555555555/onlyjs.git"
+    "url": "git+https://github.com/jeprinz/onlyjs.git"
   },
   "keywords": [
     "html",
